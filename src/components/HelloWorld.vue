@@ -4,12 +4,12 @@
       <h1>{{ title }}</h1>
       <form @submit.prevent="addTask">
         <input type="text" required="required" v-model="inputValue" />
-        <p>{{ inputValue }}</p>
         <button type="submit">Add New Note</button>
       </form>
       <ul>
         <li v-for="(task, idx) in tasks" :key="task.text">
           {{ idx + 1 }}. {{ task.text }}
+          <button @click="deleteTask(task.text)">DELETE</button>
         </li>
       </ul>
     </div>
@@ -32,11 +32,15 @@ export default {
       tasks.value.push({
         text: inputValue.value.trim(),
         completed: false,
-        err: false,
       });
       inputValue.value = "";
     };
-    return { state, title, inputValue, tasks, addTask };
+    const deleteTask = (taskText) => {
+      tasks.value = tasks.value.filter((task) => {
+        return task.text !== taskText;
+      });
+    };
+    return { state, title, inputValue, tasks, addTask, deleteTask };
   },
 };
 </script>
