@@ -6,10 +6,11 @@
         <input type="text" required="required" v-model="inputValue" />
         <button type="submit">Add New Note</button>
       </form>
-      <ul>
+      <span v-if="tasks.length == 0">Создайте свою первую заметку</span>
+      <ul v-if="tasks.length !== 0">
         <li v-for="(task, idx) in tasks" :key="task.text">
           {{ idx + 1 }}. {{ task.text }}
-          <button @click="deleteTask(task.text)">DELETE</button>
+          <button @click="deleteTask(task.id)">DELETE</button>
         </li>
       </ul>
     </div>
@@ -30,14 +31,15 @@ export default {
     //Добавить таску
     const addTask = () => {
       tasks.value.push({
+        id: tasks.value.length + 1,
         text: inputValue.value.trim(),
         completed: false,
       });
       inputValue.value = "";
     };
-    const deleteTask = (taskText) => {
+    const deleteTask = (taskId) => {
       tasks.value = tasks.value.filter((task) => {
-        return task.text !== taskText;
+        return task.id !== taskId;
       });
     };
     return { state, title, inputValue, tasks, addTask, deleteTask };
@@ -46,6 +48,11 @@ export default {
 </script>
 
 <style>
+span {
+  display: inline-block;
+  margin: 10px 0;
+}
+
 li {
   list-style-type: none;
 }
