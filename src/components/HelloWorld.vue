@@ -7,10 +7,20 @@
         <button type="submit">Add New Note</button>
       </form>
       <span v-if="tasks.length == 0">Создайте свою первую заметку</span>
-      <ul v-if="tasks.length !== 0">
-        <li v-for="(task, idx) in tasks" :key="task.text">
+      <ul>
+        <li v-for="(task, idx) in tasks" :key="task.id">
           {{ idx + 1 }}. {{ task.text }}
+          <input
+            type="text"
+            v-if="task.editing"
+            v-model="editValue"
+            :key="task.id"
+          />
           <button @click="deleteTask(task.id)">DELETE</button>
+          <button v-if="!task.editing" @click="editTask(task.text)">
+            EDIT
+          </button>
+          <button v-else @click="saveEdit(task.text)">Save</button>
         </li>
       </ul>
     </div>
@@ -24,6 +34,7 @@ export default {
   setup() {
     const title = ref("To-Do");
     const inputValue = ref("");
+    const editValue = ref("");
     const tasks = ref([]);
     const state = reactive({
       // double: computed(() => console.log("Test")),
@@ -34,15 +45,54 @@ export default {
         id: tasks.value.length + 1,
         text: inputValue.value.trim(),
         completed: false,
+        editing: false,
       });
       inputValue.value = "";
     };
+    //Удалить таску
     const deleteTask = (taskId) => {
       tasks.value = tasks.value.filter((task) => {
         return task.id !== taskId;
       });
     };
-    return { state, title, inputValue, tasks, addTask, deleteTask };
+    //Редактировать таску
+    const editTask = (taskText) => {
+      editValue.value = taskText;
+      console.log(taskText);
+      tasks.value = tasks.value.map((task) => {
+        if (task.text === taskText) {
+          task.editing = !task.editing;
+        }
+        return task;
+      });
+    };
+    const saveEdit = (taskText) => {
+      if (editValue.value == "") {
+        editValue.value = "Введите текст...";
+        setTimeout(() => {
+          editValue.value = taskText;
+        }, 2000);
+      } else {
+        tasks.value = tasks.value.map((task) => {
+          if (task.text === taskText) {
+            task.text = editValue.value.trim();
+            task.editing = !task.editing;
+          }
+          return task;
+        });
+      }
+    };
+    return {
+      state,
+      title,
+      inputValue,
+      editValue,
+      tasks,
+      addTask,
+      deleteTask,
+      editTask,
+      saveEdit,
+    };
   },
 };
 </script>
