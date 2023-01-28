@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted, watch } from "vue";
 export default {
   name: "HelloWorld",
   setup() {
@@ -66,6 +66,7 @@ export default {
         return task;
       });
     };
+    //Сохранить отредактированную таску
     const saveEdit = (taskText) => {
       if (editValue.value == "") {
         editValue.value = "Введите текст...";
@@ -82,6 +83,20 @@ export default {
         });
       }
     };
+    onMounted(() => {
+      console.log("Mount");
+      const localNotes = localStorage.getItem("tasks");
+      if (localNotes) tasks.value = JSON.parse(localNotes);
+    });
+    watch(
+      tasks,
+      (task) => {
+        localStorage.setItem("tasks", JSON.stringify(task));
+      },
+      {
+        deep: true,
+      }
+    );
     return {
       state,
       title,
