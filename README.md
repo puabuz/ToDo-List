@@ -1,4 +1,4 @@
-# notes-app-2
+# tundra
 
 ## Project setup
 ```
